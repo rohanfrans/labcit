@@ -1,0 +1,32 @@
+3. Write a C program that prints the IP layer and TCP layer socket options in a separate file.
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+int main()
+{
+ int socketfd, value;
+ socklen_t size = sizeof(value);
+ socketfd = socket(AF_INET, SOCK_STREAM, 0)
+ printf("=== IP layer options (SOL_IP) ===\n");
+ getsockopt(socketfd, IPPROTO_IP, IP_TTL, &value, &size);
+ printf("IP_TTL : %d\n", value);
+ getsockopt(socketfd, IPPROTO_IP, IP_TOS, &value, &size);
+ printf("IP_TOS : %d\n", value);
+ getsockopt(socketfd, IPPROTO_IP, IP_HDRINCL, &value, &size);
+ printf("IP_HDRINCL : %d\n", value);
+ printf("\n=== TCP layer options (SOL_TCP) ===\n");
+ getsockopt(socketfd, IPPROTO_TCP, TCP_NODELAY, &value, &size);
+ printf("TCP_NODELAY : %d\n", value);
+ getsockopt(socketfd, IPPROTO_TCP, TCP_MAXSEG, &value, &size);
+ printf("TCP_MAXSEG : %d\n", value);
+ getsockopt(socketfd, IPPROTO_TCP, TCP_KEEPIDLE, &value, &size);
+ printf("TCP_KEEPIDLE : %d\n", value);
+ getsockopt(socketfd, IPPROTO_TCP, TCP_KEEPINTVL, &value, &size);
+ printf("TCP_KEEPINTVL : %d\n", value);
+ getsockopt(socketfd, IPPROTO_TCP, TCP_KEEPCNT, &value, &size);
+ printf("TCP_KEEPCNT : %d\n", value);
+ close(socketfd);
+ return 0;
+}
