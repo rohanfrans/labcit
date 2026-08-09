@@ -1,0 +1,52 @@
+2. Write a TCP client/server program in which client sends three numbers to the server in a single message. Server
+returns sum, difference and product as a result single message. Client program should print the results
+appropriately.
+#include <stdio.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <sys/wait.h>
+#define PORT 8080
+int main()
+{
+ if(fork()==0) // Client
+ {
+ sleep(1);
+ int s,n[3],r[3];
+ struct sockaddr_in a;
+ printf("Enter 3 numbers: ");
+ scanf("%d%d%d",&n[0],&n[1],&n[2]);
+ s=socket(AF_INET,SOCK_STREAM,0);
+ a.sin_family=AF_INET;
+ a.sin_port=htons(PORT);
+ inet_pton(AF_INET,"127.0.0.1",&a.sin_addr);
+ connect(s,(struct sockaddr*)&a,sizeof(a));
+ send(s,n,sizeof(n),0);
+ recv(s,r,sizeof(r),0);
+ printf("Sum = %d\n",r[0]);
+ printf("Difference = %d\n",r[1]);
+ printf("Product = %d\n",r[2]);
+ close(s);
+ }
+ else // Server
+ {
+ int s,c,n[3],r[3];
+ struct sockaddr_in a;
+ a.sin_family=AF_INET;
+ a.sin_port=htons(PORT);
+ a.sin_addr.s_addr=INADDR_ANY;
+ s=socket(AF_INET,SOCK_STREAM,0);
+ bind(s,(struct sockaddr*)&a,sizeof(a));
+ listen(s,1);
+ c=accept(s,NULL,NULL);
+ recv(c,n,sizeof(n),0);
+ r[0]=n[0]+n[1]+n[2];
+ r[1]=n[0]-n[1]-n[2];
+ r[2]=n[0]*n[1]*n[2];
+ send(c,r,sizeof(r),0);
+ close(c);
+ close(s);
+ wait(NULL);
+ }
+ return 0;
+}
